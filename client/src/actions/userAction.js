@@ -17,11 +17,11 @@ export const signIn = (formData, router) => async (dispatch) => {
   try {
     const { data } = await api.signIn(formData);
 
-    dispatch({ type: AUTH, data });
+    dispatch({ type: AUTH, data, error: undefined });
 
     router.push('/');
   } catch (error) {
-    console.log(error);
+    dispatch({ type: AUTH, data: undefined, error: error.response.data.message });
   }
 };
 
@@ -29,11 +29,11 @@ export const signUp = (formData, router) => async (dispatch) => {
   try {
     const { data } = await api.signUp(formData);
 
-    dispatch({ type: AUTH, data });
+    dispatch({ type: AUTH, data, error: undefined });
 
     router.push('/');
   } catch (error) {
-    console.log(error);
+    dispatch({ type: AUTH, data: undefined, error: error.response.data.message });
   }
 };
 

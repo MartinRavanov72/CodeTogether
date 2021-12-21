@@ -6,14 +6,14 @@ import UserModel from "../models/user.js";
 const secret = 'fmicourse';
 
 export const getUser = async (req, res) => { 
-    const { id } = req.params;
+  const { id } = req.params;
 
-    try {
-      let user = await UserModel.findById(id);
-      res.status(200).json({user});
-    } catch (error) {
-        res.status(404).json({ message: error.message });
-    }
+  try {
+    let user = await UserModel.findById(id);
+    res.status(200).json({user});
+  } catch (error) {
+      res.status(404).json({ message: error.message });
+  }
 }
 
 export const signIn = async (req, res) => {
@@ -23,14 +23,13 @@ export const signIn = async (req, res) => {
     const oldUser = await UserModel.findOne({ email });
 
     if (!oldUser) {
-      console.log("user");
-      return res.status(400).json({ message: "User doesn't exist" });
+      return res.status(401).json({ message: "Invalid credentials" });
     } 
 
     const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
 
     if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const token = jwt.sign({ email: oldUser.email, id: oldUser._id }, secret, { expiresIn: "1h" });

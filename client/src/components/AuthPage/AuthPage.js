@@ -6,12 +6,15 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 
 import { signIn, signUp } from '../../actions/userAction';
 
+import { useSelector } from 'react-redux';
+
 import useStyles from './styles';
 import Input from './Input';
 
 const initialState = { name: '', img: '', email: '', password: '', confirmPassword: '' };
 
 const AuthPage = () => {
+  // const error = useSelector((state) => state.errors);
   const [form, setForm] = useState(initialState);
   const [isSignUp, setIsSignUp] = useState(false);
   const dispatch = useDispatch();
@@ -47,13 +50,13 @@ const AuthPage = () => {
 
   return (
     <Container component="main" maxWidth="xs">
-       <Paper className={classes.paper} elevation={6}>
-         <Avatar className={classes.avatar}>
+      <Paper className={classes.paper} elevation={6}>
+        <Avatar className={classes.avatar}>
           <LockOutlinedIcon/>
-         </Avatar>
-         <Typography component="h1" variant="h4">{ isSignUp ? 'Sign up' : 'Sign in' }</Typography>
-         <form className={classes.form} onSubmit={handleSubmit}>
-           <Grid container spacing={2}>
+        </Avatar>
+        <Typography component="h1" variant="h4">{ isSignUp ? 'Sign up' : 'Sign in' }</Typography>
+        <form className={classes.form} onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
             {isSignUp && (
               <>
               <Input name="name" label="Your name" handleChange={handleChange} autoFocus />

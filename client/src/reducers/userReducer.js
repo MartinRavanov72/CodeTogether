@@ -4,8 +4,11 @@ import { FETCH_USER, AUTH, START_LOADING, LOGOUT } from '../constants/actionType
 export default (state = { isLoading: true, users: [] }, action) => {
   switch (action.type) {
     case AUTH:
-      localStorage.setItem('profile', JSON.stringify({ ...action?.data }));
-      return { ...state, authData: action.data, loading: false, errors: null };
+      if (!action.error) {
+        localStorage.setItem('profile', JSON.stringify({ ...action?.data }));
+      }
+
+      return { ...state, authData: action.data, loading: false, errors: action.error };
     case LOGOUT:
       localStorage.clear();
       return { ...state, authData: null, loading: false, errors: null };
