@@ -5,16 +5,30 @@ import UserModel from "../models/user.js";
 
 const secret = 'fmicourse';
 
-export const getUser = async (req, res) => { 
+export const getUser = async (req, res) => {
   const { id } = req.params;
 
   try {
     let user = await UserModel.findById(id);
-    res.status(200).json({user});
+    res.status(200).json({ user });
   } catch (error) {
-      res.status(404).json({ message: error.message });
+    res.status(404).json({ message: error.message });
   }
-}
+};
+
+export const saveCode = async (req, res) => {
+  const { id } = req.params;
+  const { code } = req.body;
+
+  try {
+    let user = await UserModel.findById(id);
+    user.code = code;
+    await user.save();
+    res.status(200).json({ user });
+  } catch (err) {
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
 
 export const signIn = async (req, res) => {
   const { email, password } = req.body;
@@ -24,7 +38,7 @@ export const signIn = async (req, res) => {
 
     if (!oldUser) {
       return res.status(401).json({ message: "Invalid credentials" });
-    } 
+    }
 
     const isPasswordCorrect = await bcrypt.compare(password, oldUser.password);
 
@@ -41,7 +55,7 @@ export const signIn = async (req, res) => {
 };
 
 export const signUp = async (req, res) => {
-  const { name, email, password, img } = req.body;
+  const { name, email, password, img, code } = req.body;
 
   try {
     const oldUser = await UserModel.findOne({ email });
@@ -52,14 +66,14 @@ export const signUp = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    const result = await UserModel.create({ name, email, password: hashedPassword, img });
+    const result = await UserModel.create({ name, email, password: hashedPassword, img, code });
 
-    const token = jwt.sign( { email: result.email, id: result._id }, secret, { expiresIn: "1h" } );
+    const token = jwt.sign({ email: result.email, id: result._id }, secret, { expiresIn: "1h" });
 
     res.status(201).json({ result, token });
   } catch (error) {
     res.status(500).json({ message: "Something went wrong" });
-    
+
     console.log(error);
   }
 };

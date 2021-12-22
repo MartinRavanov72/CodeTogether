@@ -1,4 +1,4 @@
-import { AUTH, FETCH_USER, START_LOADING } from '../constants/actionTypes';
+import { AUTH, FETCH_USER, START_LOADING, SAVE_CODE } from '../constants/actionTypes';
 import * as api from '../api/index.js';
 
 export const getUser = (id) => async (dispatch) => {
@@ -12,6 +12,16 @@ export const getUser = (id) => async (dispatch) => {
     console.log(error);
   }
 };
+
+export const saveCode = (id, code) => async (dispatch) => {
+  try {
+    const { data } = await api.saveCode(id, code);
+    console.log(data);
+    dispatch({ type: SAVE_CODE, payload: { user: data.user }, error: undefined });
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 export const signIn = (formData, router) => async (dispatch) => {
   try {

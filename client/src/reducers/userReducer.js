@@ -1,21 +1,21 @@
-import { FETCH_USER, AUTH, START_LOADING, LOGOUT } from '../constants/actionTypes';
+import { AUTH, START_LOADING, LOGOUT, SAVE_CODE } from '../constants/actionTypes';
 
 // eslint-disable-next-line import/no-anonymous-default-export
-export default (state = { isLoading: true, users: [] }, action) => {
+export default (state = { isLoading: false, currentUser: {}, loading: false, errors: undefined }, action) => {
   switch (action.type) {
     case AUTH:
       if (!action.error) {
         localStorage.setItem('profile', JSON.stringify({ ...action?.data }));
       }
 
-      return { ...state, authData: action.data, loading: false, errors: action.error };
+      return { ...state, currentUser: action.data?.result, loading: false, errors: action.error };
     case LOGOUT:
       localStorage.clear();
-      return { ...state, authData: null, loading: false, errors: null };
+      return { ...state, currentUser: {}, loading: false, errors: undefined };
     case START_LOADING:
       return { ...state, isLoading: true };
-    case FETCH_USER:
-      return { ...state, user: action.payload.user};
+    case SAVE_CODE:
+      return { ...state, currentUser: action.payload.user };
     default:
       return state;
   }
