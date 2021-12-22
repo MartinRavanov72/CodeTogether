@@ -16,7 +16,7 @@ export const getUser = (id) => async (dispatch) => {
 export const saveCode = (id, code) => async (dispatch) => {
   try {
     const { data } = await api.saveCode(id, code);
-    console.log(data);
+    
     dispatch({ type: SAVE_CODE, payload: { user: data.user }, error: undefined });
   } catch (error) {
     console.log(error);
