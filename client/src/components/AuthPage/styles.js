@@ -30,5 +30,5 @@ export default makeStyles((theme) => ({
   },
   error: {
     color: "red"
- }
+  }
 }));

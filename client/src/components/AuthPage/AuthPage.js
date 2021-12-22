@@ -5,6 +5,8 @@ import { useHistory } from 'react-router-dom';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { connect } from "react-redux";
 
+import { useSelector } from 'react-redux';
+
 import { signIn, signUp } from '../../actions/userAction';
 
 import useStyles from './styles';
@@ -12,7 +14,8 @@ import Input from './Input';
 
 const initialState = { name: '', img: '', email: '', password: '', confirmPassword: '' };
 
-const AuthPage = (errors) => {
+const AuthPage = () => {
+  const error = useSelector((state) => state.users.errors);
   const [form, setForm] = useState(initialState);
   const [isSignUp, setIsSignUp] = useState(false);
   const dispatch = useDispatch();
@@ -68,6 +71,7 @@ const AuthPage = (errors) => {
           <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
             { isSignUp ? 'Sign Up' : 'Sign In' }
           </Button>
+          <p className={classes.error}>{error ? error : ""}</p>
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Button onClick={switchMode}  >
