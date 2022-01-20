@@ -26,12 +26,6 @@ const AuthPage = () => {
   const handleShowPassword = () => setShowPassword(!showPassword);
 
   const switchMode = () => {
-    setForm(initialState);
-    if (isSignUp) {
-      history.push("/users/signIn");
-    } else {
-      history.push("/users/signUp")
-    }
     setIsSignUp((prevIsSignUp) => !prevIsSignUp);
     
     setShowPassword(false);
