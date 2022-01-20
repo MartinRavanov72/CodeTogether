@@ -10,38 +10,64 @@ const CodePage = ({ currentUser }) => {
     const user = localStorage.getItem("profile");
     const dispatch = useDispatch();
 
-    const [code, setCode] = useState(() => {
-        const localStorageSaved = localStorage.getItem("code");
-        if (currentUser && currentUser.code && currentUser.code !== localStorageSaved) {
-            return currentUser.code;
-        }
+    let localStorageCode = localStorage.getItem("code");
 
-        return localStorageSaved || "console.log('Hello World!');";
-    });
+    if (currentUser && currentUser.code && currentUser.code !== localStorageCode) {
+        localStorageCode = currentUser.code;
+    } else {
+        localStorageCode = localStorageCode || "console.log('Hello World!');";
+    }
 
-    useEffect(() => {
-        localStorage.setItem('code', code);
-    }, [code]);
+    localStorage.setItem('code', localStorageCode);
+
+    if (!window.isCtrlSSet) {
+        window.isCtrlSSet = true;
+        document.addEventListener('keydown', function (e) {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveCodeToDb();
+            }
+        });
+    }
 
     function saveCodeToDb() {
-        const profile = JSON.parse(localStorage.getItem("profile"));
-        if (profile) {
-            dispatch(saveCode(profile.result._id, { code }));
+        let options = {
+            'presets': ['es2016']
+        };
+
+        localStorageCode = localStorage.getItem("code");
+
+        try {
+            localStorageCode = window.Babel.transform(localStorageCode, options).code;
+        } catch (e) {
+            
         }
+        localStorage.setItem('code', localStorageCode);
+
+        const profile = JSON.parse(localStorage.getItem("profile"));
+        
+        if (profile) {
+            dispatch(saveCode(profile.result._id, { code: localStorageCode } ));
+        }
+    }
+
+    function onChange(newVal) {
+        localStorage.setItem('code', newVal);
+        localStorageCode = newVal;
     }
 
     return (
         <div>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                {user && <Button variant="contained" onClick={saveCodeToDb}>SAVE</Button> }
+                {user && <Button id="saveButton" variant="contained" onClick={saveCodeToDb}>SAVE</Button>}
                 <TerminalPopup />
             </Box>
             <Editor
                 height="70vh"
                 theme="vs-dark"
                 defaultLanguage="javascript"
-                defaultValue={code}
-                onChange={setCode}
+                onChange={onChange}
+                value={localStorageCode}
             />
         </div>
     )

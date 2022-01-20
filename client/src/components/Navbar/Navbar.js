@@ -19,11 +19,15 @@ const Navbar = () => {
 
     setUser(null);
 
-    history.push('/users/signIn');
+    history.push('/signIn');
   };
 
-  const routeChange = () => { 
-    history.push("/users/signIn");
+  const routeChangeSignIn = () => { 
+    history.push("/signIn");
+  }
+
+  const routeChangeCodeEditor = () => { 
+    history.push("/");
   }
 
   useEffect(() => {
@@ -43,12 +47,15 @@ const Navbar = () => {
       <Toolbar className={classes.toolbar}>
         {user?.result ? (
           <div className={classes.profile}>
+            <Avatar className={classes.purple} alt={user?.result.name} src={user?.result.img}>{user?.result.name.charAt(0)}</Avatar>
             <Typography className={classes.userName} variant="h6">{user?.result.name}</Typography>
-            <Button variant="contained" className={classes.log} color="secondary" onClick={logout}>Logout</Button>
+            <Button onClick={routeChangeCodeEditor} className={classes.btn} variant="contained" color="secondary">Code Editor</Button>
+            <Button variant="contained" className={classes.btn} color="secondary" onClick={logout}>Logout</Button>
           </div>
         ) : (
-          <div className={classes.profile}>
-              <Button onClick={routeChange} className={classes.log} variant="contained" color="secondary">Sign In</Button>
+            <div className={classes.profile}>
+              <Button onClick={routeChangeCodeEditor} className={classes.btn} variant="contained" color="secondary">Code Editor</Button>
+              <Button onClick={routeChangeSignIn} className={classes.btn} variant="contained" color="secondary">Sign In</Button>
           </div>
         )}
       </Toolbar>

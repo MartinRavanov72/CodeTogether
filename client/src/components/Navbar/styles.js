@@ -7,21 +7,17 @@ export default makeStyles((theme) => ({
     margin: '30px 0',
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
-    padding: '10px 50px',
+    padding: '10px 40px',
     [theme.breakpoints.down('md')]: {
       flexDirection: 'column',
     },
   },
-  brandContainer: {
-    display: 'flex',
-    alignItems: 'center',
-  },
   toolbar: {
     display: 'flex',
     justifyContent: 'flex-end',
-    width: '600px',
+    width: '700px',
     [theme.breakpoints.down('md')]: {
       width: '500px',
     },
@@ -31,23 +27,22 @@ export default makeStyles((theme) => ({
   },
   profile: {
     display: 'flex',
-    justifyContent: 'space-between',
-    width: '600px',
+    width: '700px',
     alignItems: 'center',
+    justifyContent: 'flex-end',
     [theme.breakpoints.down('sm')]: {
       width: 'auto',
-      marginTop: 20,
       justifyContent: 'center',
     },
     [theme.breakpoints.down('md')]: {
       width: '500px',
-      marginTop: 20,
       justifyContent: 'center',
       flexDirection: 'column',
     }
   },
   btn: {
     marginLeft: '20px',
+    width: '30%',
     [theme.breakpoints.down('md')]: {
       marginLeft: '0',
       width: '100%',
@@ -60,35 +55,23 @@ export default makeStyles((theme) => ({
       alignSelf: 'center'
     }
   },
-  log: {
-    marginLeft: '40px',
-    [theme.breakpoints.down('md')]: {
-      marginLeft: '0',
-      width: '100%',
-      marginTop: '10px',
-      marginBottom: '10px'
-    },
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: '0',
-      width: '60%',
-      marginTop: '10px',
-      alignSelf: 'center'
-    }
-  },
   userName: {
     display: 'flex',
     alignItems: 'center',
     textAlign: 'center',
+    marginRight: '5em',
+    [theme.breakpoints.down('md')]: {
+      marginRight: '0',
+    },
   },
   purple: {
     color: theme.palette.getContrastText(deepPurple[500]),
     backgroundColor: deepPurple[500],
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down('md')]: {
       marginRight: '0',
-      marginTop: '12px'
     },
     height: "4em",
     width: "4em",
-    marginRight: '5px'
-  },
+    marginRight: '5em',
+  }
 }));

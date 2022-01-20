@@ -32,8 +32,7 @@ const App = () => {
           <Navbar />
           <Switch>
             <Route path="/" exact component={ CodePage } />
-            <Route path="/users/signIn" exact component={() => (!user ? <AuthPage /> : <Redirect to="/" />)} />
-            <Route path="/users/signUp" exact component={() => (!user ? <AuthPage /> : <Redirect to="/" />)} />
+            <Route path="/signIn" exact component={() => (!localStorage.getItem('profile') ? <AuthPage /> : <Redirect to="/" />)} />
           </Switch>
         </Container>
       </BrowserRouter>
