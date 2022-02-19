@@ -1,4 +1,4 @@
-import { AUTH, FETCH_USER, START_LOADING, SAVE_CODE } from '../constants/actionTypes';
+import { AUTH, FETCH_USER, START_LOADING, SAVE_CODE, SHARING_ROOM } from '../constants/actionTypes';
 import * as api from '../api/index.js';
 
 export const getUser = (id) => async (dispatch) => {
@@ -16,7 +16,7 @@ export const getUser = (id) => async (dispatch) => {
 export const saveCode = (id, code) => async (dispatch) => {
   try {
     const { data } = await api.saveCode(id, code);
-    
+
     dispatch({ type: SAVE_CODE, payload: { user: data.user }, error: undefined });
   } catch (error) {
     console.log(error);
@@ -47,4 +47,12 @@ export const signUp = (formData, router) => async (dispatch) => {
   }
 };
 
+export const startSharing = (sharingData) => async (dispatch) => {
+  try {
+    const { data } = await api.startSharing(sharingData);
 
+    dispatch({ type: SHARING_ROOM, data, error: undefined });
+  } catch (error) {
+    dispatch({ type: SHARING_ROOM, data: undefined, error: error.response.data.message });
+  }
+}

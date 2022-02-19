@@ -10,4 +10,6 @@ export const FETCH_BY_SEARCH = 'FETCH_BY_SEARCH';
 export const AUTH = 'AUTH';
 export const LOGOUT = 'LOGOUT';
 export const FETCH_USER = 'FETCH_USER';
-export const SAVE_CODE = "SAVE_CODE";
+export const SAVE_CODE = 'SAVE_CODE';
+export const SHARING_ROOM = 'SHARING_ROOM';
+export const JOINED_USER = 'JOINED_USER';

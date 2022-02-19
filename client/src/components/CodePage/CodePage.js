@@ -1,83 +1,129 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button } from "@material-ui/core";
+import { Box } from "@material-ui/core";
 import Editor from "@monaco-editor/react";
 import TerminalPopup from "../Terminal/TerminalPopup";
-import { useDispatch } from 'react-redux';
-import { saveCode } from '../../actions/userAction';
-import { connect } from "react-redux";
+import LiveSharing from '../LiveSharing/LiveSharing';
+import { subscribeToCodeEditor, saveCode, addSpectator } from '../LiveSharing/api';
+import { getSharing, joinSharing } from '../../api';
+import { useHistory } from 'react-router-dom';
 
-const CodePage = ({ currentUser }) => {
-    const user = localStorage.getItem("profile");
-    const dispatch = useDispatch();
+const CodePage = (props) => {
+    const history = useHistory();
+    const [user, setUser] = useState(null);
+    const [code, setCode] = useState('');
+    const existingCode = localStorage.getItem('code');
+    const [localStorageCode, setLocalStorageCode] = useState(existingCode ? existingCode : 'console.log(\'Hello World!\');');
+    const [isHost, setIsHost] = useState(true);
+    const [allowUserType, setAllowUserType] = useState(true);
 
-    let localStorageCode = localStorage.getItem("code");
-
-    if (currentUser && currentUser.code && currentUser.code !== localStorageCode) {
-        localStorageCode = currentUser.code;
-    } else {
-        localStorageCode = localStorageCode || "console.log('Hello World!');";
-    }
-
-    localStorage.setItem('code', localStorageCode);
-
-    if (!window.isCtrlSSet) {
-        window.isCtrlSSet = true;
-        document.addEventListener('keydown', function (e) {
-            if (e.ctrlKey && e.key === 's') {
-                e.preventDefault();
-                saveCodeToDb();
-            }
-        });
-    }
-
-    function saveCodeToDb() {
-        let options = {
-            'presets': ['es2016']
-        };
-
-        localStorageCode = localStorage.getItem("code");
-
-        try {
-            localStorageCode = window.Babel.transform(localStorageCode, options).code;
-        } catch (e) {
-            
-        }
+    useEffect(() => {
         localStorage.setItem('code', localStorageCode);
+    }, [localStorageCode]);
 
-        const profile = JSON.parse(localStorage.getItem("profile"));
-        
-        if (profile) {
-            dispatch(saveCode(profile.result._id, { code: localStorageCode } ));
+
+    useEffect(() => {
+        const sharingId = props.match.params.sharingId;
+
+        if (sharingId) {
+            getSharing(sharingId)
+                .then(({ data }) => {
+                    const { live, guest, userType } = data;
+
+                    if (!live) {
+                        history.push('/not-found');
+                        return;
+                    } else {
+                        const localStorageUser = localStorage.getItem('profile');
+                        if (!guest && !localStorageUser) {
+                            history.push('/signIn');
+                        } else {
+                            setAllowUserType(userType);
+
+                            let joiningUser = {};
+                            let spectatorId;
+
+                            if (localStorageUser) {
+                                const user = JSON.parse(localStorageUser).result;
+                                spectatorId = user.email;
+                                joiningUser = {
+                                    name: user.name,
+                                    email: user.email,
+                                    img: user.img,
+                                };
+                            }
+
+                            joinSharing(sharingId, joiningUser);
+                            addSpectator(spectatorId, sharingId)
+                            subscribeToCodeEditor(sharingId, ({ code }) => {
+                                setCode(code);
+                            });
+                            setIsHost(false);
+                        }
+                    }
+                })
+                .catch(() => {
+                    history.push('/not-found');
+                })
+        } else {
+            const localStorageUser = localStorage.getItem('profile');
+            if (!localStorageUser) return;
+
+            const user = JSON.parse(localStorageUser).result;
+            if (!!user && Object.keys(user) !== 0) {
+                setIsHost(true);
+                setUser(user);
+                subscribeToCodeEditor(user._id, (data) => {
+                    const { code } = data;
+                    setCode(code);
+                });
+            }
         }
-    }
+
+        return () => {
+            setLocalStorageCode('');
+            setCode('');
+            setUser(null);
+        }
+    }, []);
 
     function onChange(newVal) {
-        localStorage.setItem('code', newVal);
-        localStorageCode = newVal;
+        if (!allowUserType) {
+            const currentCode = code;
+            setCode(' ');
+            setCode(currentCode);
+            return;
+        }
+
+        const sharingId = props.match.params.sharingId;
+
+        if (sharingId) {
+            saveCode(sharingId, newVal);
+        } else if (!!user && Object.keys(user).length !== 0) {
+            saveCode(user._id, newVal);
+        }
+
+        setLocalStorageCode(newVal);
     }
 
     return (
         <div>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                {user && <Button id="saveButton" variant="contained" onClick={saveCodeToDb}>SAVE</Button>}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                {isHost ? (
+                    <LiveSharing user={user} />
+                ) : <div />}
                 <TerminalPopup />
             </Box>
+
             <Editor
                 height="70vh"
                 theme="vs-dark"
                 defaultLanguage="javascript"
                 onChange={onChange}
-                value={localStorageCode}
+                value={code ? code : localStorageCode}
             />
         </div>
     )
 }
 
-const mapStateToProps = state => {
-    return {
-        currentUser: state.users.currentUser
-    };
-};
-
-export default connect(mapStateToProps)(CodePage);
+export default CodePage;
 

@@ -9,6 +9,7 @@ import { MuiThemeProvider, createTheme } from '@material-ui/core/styles';
 import red from '@material-ui/core/colors/red';
 import green from '@material-ui/core/colors/green';
 import { Container } from '@material-ui/core';
+import NotFoundPage from './components/NotFoundPage.js';
 
 const theme = createTheme({
   palette: {
@@ -22,8 +23,6 @@ const theme = createTheme({
 });
 
 const App = () => {
-  const user = JSON.parse(localStorage.getItem('profile'));
-  //user does not refresh 
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -33,6 +32,8 @@ const App = () => {
           <Switch>
             <Route path="/" exact component={ CodePage } />
             <Route path="/signIn" exact component={() => (!localStorage.getItem('profile') ? <AuthPage /> : <Redirect to="/" />)} />
+            <Route path="/sharing/:sharingId" component={ CodePage } />
+            <Route path="/not-found" component={NotFoundPage} />
           </Switch>
         </Container>
       </BrowserRouter>
